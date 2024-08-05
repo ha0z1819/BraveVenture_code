@@ -16,7 +16,7 @@ public class Character : MonoBehaviour
     public bool invulnerable;
 
     public UnityEvent<Transform> OnTakeDamage;
-
+    public UnityEvent OnDie;
 
 
 
@@ -51,6 +51,7 @@ public class Character : MonoBehaviour
         {
             currentHealth = 100;
             // 触发死亡
+            OnDie?.Invoke();
         }
     }
      

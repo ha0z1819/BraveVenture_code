@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,8 +18,9 @@ public class PlayerController : MonoBehaviour
     public float speed;
     public float jumpForce;
     public bool isCrouch;
-    public bool isHurt;
     public float hurtForce;
+    public bool isHurt;
+    public bool isDead;
     private float walkSpeed=>speed/2.5f;
     private float runSpeed;
     
@@ -61,18 +63,24 @@ public class PlayerController : MonoBehaviour
 
     
 
-    private void OnEnable(){
+    private void OnEnable()
+    {
         inputControl.Enable();
     }
 
-    private void OnDisable(){
+    private void OnDisable()
+    {
         inputControl.Disable();
     }
-    private void  Update(){
+    private void  Update()
+    {
         inputDirection = inputControl.GamePlay.Move.ReadValue<Vector2>();
     }
-    private void FixedUpdate(){
-        Move();
+    private void FixedUpdate()
+    {
+        // 受伤就无法移动
+        if ( !isHurt )
+            Move();
     }
 
 
@@ -122,7 +130,19 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(transform.up*jumpForce,ForceMode2D.Impulse);
         }
     }
-    public void GetHurt(Transform attacker){
-        
+    public void GetHurt(Transform attacker)
+    {
+        isHurt = true;
+        // 人物的速度停下来
+        rb.velocity=Vector2.zero;
+        // 计算受伤的方向  并朝反方向
+        Vector2 dir=new Vector2(transform.position.x-attacker.position.x, 0).normalized;
+        // 施加一个力
+        rb.AddForce(dir*hurtForce,ForceMode2D.Impulse);
+    }
+    public void PlayerDead()
+    {
+        isDead = true;
+        inputControl.GamePlay.Disable();
     }
 }

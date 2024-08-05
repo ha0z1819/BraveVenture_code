@@ -24,6 +24,7 @@ public class PlayerAnimation : MonoBehaviour
 
         anim.SetBool("isGround", physicsCheck.isGround);
         anim.SetBool("isCrouch", playerController.isCrouch);
+        anim.SetBool("isDead", playerController.isDead);
 
     }
     public void PlayHurt(){
