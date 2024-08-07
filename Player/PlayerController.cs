@@ -13,16 +13,25 @@ public class PlayerController : MonoBehaviour
     public PhysicsCheck physicsCheck;
     public Vector2 inputDirection;
     public SpriteRenderer spriteRenderer;
-    [Header("基本参数")]
+    private PlayerAnimation playerAnimation;
 
+
+    [Header("基本参数")]
     public float speed;
     public float jumpForce;
-    public bool isCrouch;
     public float hurtForce;
-    public bool isHurt;
-    public bool isDead;
     private float walkSpeed=>speed/2.5f;
     private float runSpeed;
+
+    [Header("物理材质")]
+    public PhysicsMaterial2D normal;
+    public PhysicsMaterial2D wall;
+
+    [Header("状态")]
+    public bool isDead;
+    public bool isHurt;
+    public bool isCrouch;
+    public bool isAttack;
     
     private Rigidbody2D rb;
     private CapsuleCollider2D Coll;
@@ -37,7 +46,7 @@ public class PlayerController : MonoBehaviour
         physicsCheck=GetComponent<PhysicsCheck>();
         inputControl.GamePlay.Jump.started+=Jump;
         Coll=GetComponent<CapsuleCollider2D>();
-
+        playerAnimation=GetComponent<PlayerAnimation>();
 
         originalOffset = Coll.offset;
         originalSize = Coll.size;
@@ -59,6 +68,9 @@ public class PlayerController : MonoBehaviour
             }
         };
         #endregion
+
+        // 攻击
+        inputControl.GamePlay.Attack.started += PlayerAttack;
     }
 
     
@@ -75,11 +87,21 @@ public class PlayerController : MonoBehaviour
     private void  Update()
     {
         inputDirection = inputControl.GamePlay.Move.ReadValue<Vector2>();
+
+        // 检测人物是否在空中，改变其摩擦力
+        CheckState();
     }
+
+    private void CheckState()
+    {
+        Coll.sharedMaterial = physicsCheck.isGround ? normal : wall;
+   
+    }
+
     private void FixedUpdate()
     {
         // 受伤就无法移动
-        if ( !isHurt )
+        if ( !isHurt && ! isAttack)
             Move();
     }
 
@@ -130,6 +152,15 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(transform.up*jumpForce,ForceMode2D.Impulse);
         }
     }
+
+    private void PlayerAttack(InputAction.CallbackContext context)
+    {
+        playerAnimation.PlayAttack();
+        isAttack=true;
+        
+    }
+
+    #region UnityEvent
     public void GetHurt(Transform attacker)
     {
         isHurt = true;
@@ -145,4 +176,5 @@ public class PlayerController : MonoBehaviour
         isDead = true;
         inputControl.GamePlay.Disable();
     }
+    #endregion
 }
