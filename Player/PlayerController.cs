@@ -125,10 +125,12 @@ public class PlayerController : MonoBehaviour
     
         if (inputDirection.x<0)
         {
-            spriteRenderer.flipX = true;
+            // spriteRenderer.flipX = true;
+            transform.localScale = new Vector3(-1, 1, 1);
         }else if(inputDirection.x>0)
         {
-            spriteRenderer.flipX = false;
+            // spriteRenderer.flipX = false;
+            transform.localScale = new Vector3(1, 1, 1);
         }
 
         // 下蹲
