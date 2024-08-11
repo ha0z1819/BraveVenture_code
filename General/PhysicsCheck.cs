@@ -40,15 +40,17 @@ public class PhysicsCheck : MonoBehaviour
 
     private void Check()
     {
-        // 检测地面
-        isGround= Physics2D.OverlapCircle((Vector2)transform.position+bottomOffset,checkRaduis,groundLayer);
-        // 墙体判断
-        touchLeftWall = Physics2D.OverlapCircle((Vector2)transform.position + leftOffset, checkRaduis, groundLayer);
-        touchRightWall = Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, checkRaduis, groundLayer);
+       //检测地面
+        isGround = Physics2D.OverlapCircle((Vector2)transform.position + new Vector2(bottomOffset.x * transform.localScale.x, bottomOffset.y), checkRaduis, groundLayer);
+
+        //墙体判断
+        touchLeftWall = Physics2D.OverlapCircle((Vector2)transform.position + new Vector2(leftOffset.x, leftOffset.y), checkRaduis, groundLayer);
+        touchRightWall = Physics2D.OverlapCircle((Vector2)transform.position + new Vector2(rightOffset.x, rightOffset.y), checkRaduis, groundLayer);
     }
-    private void OnDrawGizmosSelected() {
-        Gizmos.DrawWireSphere((Vector2)transform.position+bottomOffset,checkRaduis);
-        Gizmos.DrawWireSphere((Vector2)transform.position+leftOffset,checkRaduis);
-        Gizmos.DrawWireSphere((Vector2)transform.position+rightOffset,checkRaduis);
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireSphere((Vector2)transform.position + new Vector2(bottomOffset.x * transform.localScale.x, bottomOffset.y), checkRaduis);
+        Gizmos.DrawWireSphere((Vector2)transform.position + new Vector2(leftOffset.x, leftOffset.y), checkRaduis);
+        Gizmos.DrawWireSphere((Vector2)transform.position + new Vector2(rightOffset.x, rightOffset.y), checkRaduis);
     }
 }
