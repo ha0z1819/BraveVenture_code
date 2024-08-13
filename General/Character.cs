@@ -12,7 +12,7 @@ public class Character : MonoBehaviour
     // 无敌持续时间
     public float invulnerableDuration;
     // 无敌时间计时
-    private float invulnerableCounter;
+   [HideInInspector] public float invulnerableCounter;
     public bool invulnerable;
 
     public UnityEvent<Transform> OnTakeDamage;
