@@ -8,27 +8,27 @@ public class BeePatrolState : BaseState
     private Vector3 moveDir;
     public override void OnEnter(Enemy enemy)
     {
-        currrentEnemy = enemy;
-        currrentEnemy.currentSpeed = currrentEnemy.normalSpeed;
+        currentEnemy = enemy;
+        currentEnemy.currentSpeed = currentEnemy.normalSpeed;
         target = enemy.GetNewPoint();
     }
     public override void LogicUpdate()
     {
-        if (currrentEnemy.FoundPlayer())
-            currrentEnemy.switchState(NPCState.Chase);
+        if (currentEnemy.FoundPlayer())
+            currentEnemy.switchState(NPCState.Chase);
         
-        if (Mathf.Abs(target.x-currrentEnemy.transform.position.x) < 0.1f&&Mathf.Abs(target.y - currrentEnemy.transform.position.y) < 0.1f)
+        if (Mathf.Abs(target.x-currentEnemy.transform.position.x) < 0.1f&&Mathf.Abs(target.y - currentEnemy.transform.position.y) < 0.1f)
         {
-            currrentEnemy.wait = true;
-            target = currrentEnemy.GetNewPoint();
+            currentEnemy.wait = true;
+            target = currentEnemy.GetNewPoint();
         }
 
-        moveDir=(target-currrentEnemy.transform.position).normalized;
+        moveDir=(target-currentEnemy.transform.position).normalized;
 
         if (moveDir.x>0)
-            currrentEnemy.transform.localScale = new Vector3(-1, 1, 1);
+            currentEnemy.transform.localScale = new Vector3(-1, 1, 1);
         if (moveDir.x<0)
-            currrentEnemy.transform.localScale = new Vector3(1, 1, 1);
+            currentEnemy.transform.localScale = new Vector3(1, 1, 1);
 
         
 
@@ -37,13 +37,13 @@ public class BeePatrolState : BaseState
 
     public override void PhysicsUpdate()
     {
-        if ( ! currrentEnemy.wait && ! currrentEnemy.isHurt && ! currrentEnemy.isDead)
+        if ( ! currentEnemy.wait && ! currentEnemy.isHurt && ! currentEnemy.isDead)
         {
            
-            currrentEnemy.rb.velocity=moveDir*currrentEnemy.currentSpeed*Time.deltaTime;
+            currentEnemy.rb.velocity=moveDir*currentEnemy.currentSpeed*Time.deltaTime;
         }else
         {
-            currrentEnemy.rb.velocity= Vector3.zero;
+            currentEnemy.rb.velocity= Vector3.zero;
         }
     }
     public override void OnExit()

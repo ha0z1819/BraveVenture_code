@@ -7,21 +7,21 @@ public class BoarChaseState : BaseState
       public override void OnEnter(Enemy enemy)
     {
         Debug.Log("chase");
-        currrentEnemy = enemy;
-        currrentEnemy.currentSpeed=currrentEnemy.chaseSpeed;
-        currrentEnemy.anim.SetBool("run", true);
+        currentEnemy = enemy;
+        currentEnemy.currentSpeed=currentEnemy.chaseSpeed;
+        currentEnemy.anim.SetBool("run", true);
 
     }
     public override void LogicUpdate()
     {
-        if(currrentEnemy.lostTimeCounter<=0)
+        if(currentEnemy.lostTimeCounter<=0)
         {
-            currrentEnemy.switchState(NPCState.Patrol);
+            currentEnemy.switchState(NPCState.Patrol);
         }
-        if (!currrentEnemy.physicsCheck.isGround||(currrentEnemy.physicsCheck.touchLeftWall&&currrentEnemy.faceDir.x<0)||(currrentEnemy.physicsCheck.touchRightWall&&currrentEnemy.faceDir.x>0))
+        if (!currentEnemy.physicsCheck.isGround||(currentEnemy.physicsCheck.touchLeftWall&&currentEnemy.faceDir.x<0)||(currentEnemy.physicsCheck.touchRightWall&&currentEnemy.faceDir.x>0))
         {
             Debug.Log("反转方向");
-            currrentEnemy.transform.localScale=new Vector3(currrentEnemy.faceDir.x, 1, 1);
+            currentEnemy.transform.localScale=new Vector3(currentEnemy.faceDir.x, 1, 1);
         }
     }
 
@@ -32,7 +32,7 @@ public class BoarChaseState : BaseState
 
     public override void OnExit()
     {
-        currrentEnemy.anim.SetBool("run", false);
+        currentEnemy.anim.SetBool("run", false);
     }
 
     

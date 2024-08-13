@@ -6,24 +6,24 @@ public class SnailPatroState : BaseState
 {
      public override void OnEnter(Enemy enemy)
     {
-        currrentEnemy = enemy;
-        currrentEnemy.currentSpeed = currrentEnemy.normalSpeed;
+        currentEnemy = enemy;
+        currentEnemy.currentSpeed = currentEnemy.normalSpeed;
     }
 
     public override void LogicUpdate()
     {
-        if (currrentEnemy.FoundPlayer())
+        if (currentEnemy.FoundPlayer())
         {
             Debug.Log("faxian player");
-            currrentEnemy.switchState(NPCState.Skill);  
+            currentEnemy.switchState(NPCState.Skill);  
         }
-        if (!currrentEnemy.physicsCheck.isGround||(currrentEnemy.physicsCheck.touchLeftWall&&currrentEnemy.faceDir.x<0)||(currrentEnemy.physicsCheck.touchRightWall&&currrentEnemy.faceDir.x>0))
+        if (!currentEnemy.physicsCheck.isGround||(currentEnemy.physicsCheck.touchLeftWall&&currentEnemy.faceDir.x<0)||(currentEnemy.physicsCheck.touchRightWall&&currentEnemy.faceDir.x>0))
         {
-            currrentEnemy.wait=true;
-            currrentEnemy.anim.SetBool("walk", false); 
+            currentEnemy.wait=true;
+            currentEnemy.anim.SetBool("walk", false); 
         }else
         {
-            currrentEnemy.anim.SetBool("walk", true);
+            currentEnemy.anim.SetBool("walk", true);
         }
     }
 
