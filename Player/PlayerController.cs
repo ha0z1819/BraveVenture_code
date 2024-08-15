@@ -16,12 +16,14 @@ public class PlayerController : MonoBehaviour
     private PlayerAnimation playerAnimation;
 
 
+
     [Header("基本参数")]
     public float speed;
     public float jumpForce;
     public float hurtForce;
     private float walkSpeed=>speed/2.5f;
     private float runSpeed;
+    public float wallJumpForce;
 
     [Header("物理材质")]
     public PhysicsMaterial2D normal;
@@ -32,6 +34,7 @@ public class PlayerController : MonoBehaviour
     public bool isHurt;
     public bool isCrouch;
     public bool isAttack;
+    public bool wallJump;
     
     private Rigidbody2D rb;
     private CapsuleCollider2D Coll;
@@ -95,7 +98,16 @@ public class PlayerController : MonoBehaviour
     private void CheckState()
     {
         Coll.sharedMaterial = physicsCheck.isGround ? normal : wall;
-   
+
+        if (physicsCheck.onWall)
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y / 2f);
+        else
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y);
+
+        if(wallJump&&rb.velocity.y<0f)
+        {
+            wallJump = false;
+        }
     }
 
     private void FixedUpdate()
@@ -107,8 +119,8 @@ public class PlayerController : MonoBehaviour
 
 
 
-    public void Move(){
-        if(!isCrouch)
+    public void Move(){ 
+        if( !isCrouch && !wallJump)
         rb.velocity = new Vector2(inputDirection.x * speed * Time.deltaTime,rb.velocity.y);
 
         // 人物反转  方法一
@@ -152,6 +164,11 @@ public class PlayerController : MonoBehaviour
         if (physicsCheck.isGround)
         {
             rb.AddForce(transform.up*jumpForce,ForceMode2D.Impulse);
+        }
+        else if(physicsCheck.onWall)
+        {
+            rb.AddForce(new Vector2(-inputDirection.x,2f)*wallJumpForce,ForceMode2D.Impulse);
+            wallJump = true;
         }
     }
 

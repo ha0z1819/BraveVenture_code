@@ -14,10 +14,9 @@ public class Character : MonoBehaviour
     // 无敌时间计时
    [HideInInspector] public float invulnerableCounter;
     public bool invulnerable;
-
     public UnityEvent<Transform> OnTakeDamage;
     public UnityEvent OnDie;
-
+    public UnityEvent<Character> OnHealthChange;
 
 
 
@@ -26,6 +25,7 @@ public class Character : MonoBehaviour
     // 方法函数
     private void Start(){
         currentHealth=maxHealth;
+        OnHealthChange?.Invoke(this);
     }
     private void Update(){
         // 判断无敌时间
@@ -53,6 +53,7 @@ public class Character : MonoBehaviour
             // 触发死亡
             OnDie?.Invoke();
         }
+        OnHealthChange?.Invoke(this);
     }
      
      /// <summary>触发受伤无敌</summary>
