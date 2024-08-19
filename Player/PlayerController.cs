@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.Rendering;
@@ -14,16 +15,19 @@ public class PlayerController : MonoBehaviour
     public Vector2 inputDirection;
     public SpriteRenderer spriteRenderer;
     private PlayerAnimation playerAnimation;
-
+    private Character character;
 
 
     [Header("基本参数")]
     public float speed;
     public float jumpForce;
     public float hurtForce;
+    public float SlideDistance;
+    public float SlideSpeed;
     private float walkSpeed=>speed/2.5f;
     private float runSpeed;
     public float wallJumpForce;
+    public float slidePowerCost;
 
     [Header("物理材质")]
     public PhysicsMaterial2D normal;
@@ -35,6 +39,7 @@ public class PlayerController : MonoBehaviour
     public bool isCrouch;
     public bool isAttack;
     public bool wallJump;
+    public bool isSlide;
     
     private Rigidbody2D rb;
     private CapsuleCollider2D Coll;
@@ -50,6 +55,7 @@ public class PlayerController : MonoBehaviour
         inputControl.GamePlay.Jump.started+=Jump;
         Coll=GetComponent<CapsuleCollider2D>();
         playerAnimation=GetComponent<PlayerAnimation>();
+        character=GetComponent<Character>();
 
         originalOffset = Coll.offset;
         originalSize = Coll.size;
@@ -74,9 +80,11 @@ public class PlayerController : MonoBehaviour
 
         // 攻击
         inputControl.GamePlay.Attack.started += PlayerAttack;
+        // 滑铲
+        inputControl.GamePlay.Slide.started += Slide;
+
     }
 
-    
 
     private void OnEnable()
     {
@@ -108,6 +116,11 @@ public class PlayerController : MonoBehaviour
         {
             wallJump = false;
         }
+
+        if (isDead || isSlide)
+            gameObject.layer = LayerMask.NameToLayer("Enemy");
+        else
+            gameObject.layer = LayerMask.NameToLayer("Player");
     }
 
     private void FixedUpdate()
@@ -158,12 +171,52 @@ public class PlayerController : MonoBehaviour
             Coll.offset = originalOffset;
         }
     }
+    private void Slide(InputAction.CallbackContext context)
+    {
+        if (!isSlide && physicsCheck.isGround && character.currentPower >= slidePowerCost)
+        {
+            isSlide = true;
+            var targetPos = new Vector3(transform.position.x + SlideDistance * transform.localScale.x, transform.position.y);
+            
+            gameObject.layer = LayerMask.NameToLayer("Enemy");
+            StartCoroutine(TriggerSlide(targetPos));
+
+            character.OnSlide(slidePowerCost);
+        }
+    
+    }
+
+    private IEnumerator TriggerSlide(Vector3 target)
+    {
+        do
+        {
+            yield return null;
+            if (!physicsCheck.isGround)
+            {
+                break;
+            }
+            if ((physicsCheck.touchLeftWall&&transform.localScale.x<0f)||(physicsCheck.touchRightWall&&transform.lossyScale.x>0f))
+            {
+                isSlide=false;
+                break;
+            }
+            Debug.Log(MathF.Abs(target.x - transform.position.x));
+            rb.MovePosition(new Vector2(transform.position.x + transform.localScale.x * SlideSpeed, transform.position.y));
+        } while (MathF.Abs(target.x - transform.position.x) > 0.15f);
+    
+        isSlide=false;
+         gameObject.layer = LayerMask.NameToLayer("Player");
+    }
     private void Jump(InputAction.CallbackContext context)
     {
         // 给刚体施加一个力（力的方向和力度，力的形式）
         if (physicsCheck.isGround)
         {
             rb.AddForce(transform.up*jumpForce,ForceMode2D.Impulse);
+
+            // 打断滑铲携程
+            isSlide = false;
+            StopAllCoroutines();
         }
         else if(physicsCheck.onWall)
         {

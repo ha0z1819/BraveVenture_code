@@ -7,6 +7,9 @@ public class Character : MonoBehaviour
     [Header("基本属性")]
     public float maxHealth;
     public float currentHealth;
+    public float maxPower;
+    public float currentPower;
+    public float powerRecoverSpeed;
 
     [Header("受伤无敌")]
     // 无敌持续时间
@@ -25,6 +28,7 @@ public class Character : MonoBehaviour
     // 方法函数
     private void Start(){
         currentHealth=maxHealth;
+        currentPower=maxPower;
         OnHealthChange?.Invoke(this);
     }
     private void Update(){
@@ -34,6 +38,10 @@ public class Character : MonoBehaviour
             if(invulnerableCounter <= 0){
                 invulnerable = false;
             }
+        }
+        if(currentPower < maxPower)
+        {
+            currentPower+=Time.deltaTime*powerRecoverSpeed;
         }
     }
     /// <summary>伤害触发</summary>
@@ -62,5 +70,10 @@ public class Character : MonoBehaviour
             invulnerable=true;
             invulnerableCounter=invulnerableDuration;
         }
+    }
+    public void OnSlide( float cost)
+    {
+        currentPower-=cost;
+        OnHealthChange?.Invoke(this);
     }
 }

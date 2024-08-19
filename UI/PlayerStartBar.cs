@@ -4,14 +4,26 @@ using UnityEngine;
 using UnityEngine.UI;
 public class PlayerStartBar : MonoBehaviour
 {
+    private Character currentCharacter;
     public Image healthImage;
     public Image healthDelayImage;
     public Image powerImage;
+    private bool isRecovering;
 
     private void Update() {
         if(healthDelayImage.fillAmount>healthImage.fillAmount)
         {
             healthDelayImage.fillAmount -= Time.deltaTime/2;
+        }
+        if(isRecovering)
+        {
+            float persentage = currentCharacter.currentPower / currentCharacter.maxPower;
+            powerImage.fillAmount = persentage;
+            if(persentage>1)
+            {
+                isRecovering = false;
+                return;
+            }
         }
     }
 
@@ -22,5 +34,13 @@ public class PlayerStartBar : MonoBehaviour
     public void OnHealthChange(float persentage)
     {
         healthImage.fillAmount = persentage;
+    }
+
+    public void OnPowerChange(Character character)
+    {
+        isRecovering = true;
+        currentCharacter = character;
+
+
     }
 }
